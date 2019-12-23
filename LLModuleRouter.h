@@ -47,6 +47,12 @@ typedef void (^HandlerBlock) (id anObject) ;
 /// @param handlerBlock 回调
 void LLModuleRouterPersent(NSString * _Nullable viewControllerName ,id _Nullable publicParamer ,BOOL isNeedNavigationController ,BOOL animated ,HandlerBlock handlerBlock);
 
+/// 简化dimiss
+/// @param viewControllerName 控制器类名
+/// @param anObject block回调传输对象
+/// @param animated 是否需要动画
+void LLModuleRouterDimiss(NSString * _Nullable viewControllerName , id _Nullable anObject ,BOOL animated);
+
 /// 简化push
 /// @param viewControllerName 控制器类名
 /// @param publicParamer 公共参数

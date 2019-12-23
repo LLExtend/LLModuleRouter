@@ -94,6 +94,24 @@ void LLModuleRouterPersent(NSString * _Nullable viewControllerName ,id _Nullable
     }
 }
 
+void LLModuleRouterDimiss(NSString * _Nullable viewControllerName , id _Nullable anObject ,BOOL animated) {
+    if (LLTopViewControllerTool.ll_topViewController.handlerBlock) {
+        LLTopViewControllerTool.ll_topViewController.handlerBlock(anObject);
+    }
+    
+    if (viewControllerName.length == 0) {
+        [getCurrentNavigationController() dismissViewControllerAnimated:YES completion:nil];
+    } else {
+        UIViewController *appointViewController = isContainsViewController(viewControllerName);
+
+        if ([appointViewController respondsToSelector:@selector(routerPassObject:trigger:)]) {
+            [appointViewController routerPassObject:anObject trigger:LLTopViewControllerTool.ll_topViewController];
+        }
+        
+        [getCurrentNavigationController() dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
 void LLModuleRouterPush(NSString * _Nullable viewControllerName ,id _Nullable publicParamer ,BOOL animated ,HandlerBlock handlerBlock) {
     BOOL isExistViewController = dynamicCheckIsExistViewController(viewControllerName);
        
@@ -134,22 +152,8 @@ void LLModuleRouterPop(NSString * _Nullable viewControllerName , id _Nullable an
     }
 }
 
-void dynamicRemoveViewController (NSString *viewControllerName) {
-    UIViewController *viewController = isContainsViewController(viewControllerName);
-    if (!viewController) return;
-    NSMutableArray<__kindof UIViewController *> *controllers = [viewController.navigationController.viewControllers mutableCopy];
-    __block UIViewController *controllerToRemove = nil;
-    [controllers enumerateObjectsUsingBlock:^(__kindof UIViewController * obj, NSUInteger idx, BOOL * stop) {
-        if (obj == viewController) {
-            controllerToRemove = obj;
-            *stop = YES;
-        }
-    }];
-    
-    if (controllerToRemove) {
-        [controllers removeObject:controllerToRemove];
-        [viewController.navigationController setViewControllers:[NSArray arrayWithArray:controllers] animated:NO];
-    }
+UINavigationController * getCurrentNavigationController (void) {
+    return LLTopViewControllerTool.ll_topViewController.navigationController;
 }
 
 UIViewController * isContainsViewController (NSString *viewControllerName) {
@@ -166,8 +170,22 @@ UIViewController * isContainsViewController (NSString *viewControllerName) {
     return appointViewController;
 }
 
-UINavigationController * getCurrentNavigationController (void) {
-    return LLTopViewControllerTool.ll_topViewController.navigationController;
+void dynamicRemoveViewController (NSString *viewControllerName) {
+    UIViewController *viewController = isContainsViewController(viewControllerName);
+    if (!viewController) return;
+    NSMutableArray<__kindof UIViewController *> *controllers = [viewController.navigationController.viewControllers mutableCopy];
+    __block UIViewController *controllerToRemove = nil;
+    [controllers enumerateObjectsUsingBlock:^(__kindof UIViewController * obj, NSUInteger idx, BOOL * stop) {
+        if (obj == viewController) {
+            controllerToRemove = obj;
+            *stop = YES;
+        }
+    }];
+    
+    if (controllerToRemove) {
+        [controllers removeObject:controllerToRemove];
+        [viewController.navigationController setViewControllers:[NSArray arrayWithArray:controllers] animated:NO];
+    }
 }
 
 BOOL dynamicCheckIsExistViewController (NSString *viewControllerName) {
