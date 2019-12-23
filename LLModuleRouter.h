@@ -1,14 +1,43 @@
-# LLModuleRouter
-模块化开发push、pop、present中间件
+//
+//  LLModuleRouter.h
+//  LLModuleRouter
+//
+//  Created by apple on 2019/12/23.
+//  Copyright © 2019 ll. All rights reserved.
+//
 
-### 开发初衷
-开发中很多使用Push、Pop、Present控制器的情况，同时需要import类声明，比较繁琐。故在此情况下为了偷懒封装了LLModuleRouter，适用于模块化开发项目。
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
-### 原理
-实现原理很简单：主要是使用‘类名字符串’反射为控制器类，然后初始化当前所需控制器，控制器持有公共参数和回调block，控制器所持有参数使用runtime动态绑定，具体可查看实现代码。
+NS_ASSUME_NONNULL_BEGIN
 
-### 代码
-```
+typedef void (^HandlerBlock) (id anObject) ;
+
+@interface LLTopViewControllerTool : NSObject
+
+/// 获取顶部控制器
++ (UIViewController *)ll_topViewController;
+
+@end
+
+
+@interface NSObject (LLCategory)
+
+/// 公共参数 可以用于viewController之间属性传值
+@property (nonatomic ,strong) id publicParamer;
+
+/// 回调
+@property (nonatomic ,copy) HandlerBlock handlerBlock;
+
+/// 回调
+/// @param object 回调参数
+/// @param trigger 回调触发者
+- (void)routerPassObject:(_Nullable id)object trigger:(_Nullable id)trigger;
+@end
+
+
+
+@interface LLModuleRouter : NSObject
 
 /// 简化模态
 /// @param viewControllerName 控制器类名
@@ -35,6 +64,6 @@ void LLModuleRouterPop(NSString * _Nullable viewControllerName , id _Nullable an
 /// @param viewControllerName 控制器类名
 void dynamicRemoveViewController (NSString *viewControllerName);
 
-```
+@end
 
-
+NS_ASSUME_NONNULL_END
